@@ -1,7 +1,6 @@
 import { load } from 'cheerio';
 
 import type { Route } from '@/types';
-import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
@@ -49,7 +48,7 @@ async function handler(ctx) {
                     title: item.find('.bt').text(),
                     link: item.attr('href'),
                     description: item.find('p').text(),
-                    pubDate: timezone(parseDate(item.find('.time').text().trim()), 8),
+                    pubDate: timezone(parseDate(item.find('.time').text()), 8),
                 };
             }
             const a = item.find('.text a');
@@ -57,11 +56,11 @@ async function handler(ctx) {
                 title: a.first().text(),
                 link: a.attr('href'),
                 description: item.find('.miaoshu').text(),
-                pubDate: timezone(parseDate(item.find('.time').text().trim()), 8),
+                pubDate: timezone(parseDate(item.find('.time').text()), 8),
             };
         });
 
-    const out = await Promise.all(list.map((item) => parseArticle(item, cache.tryGet)));
+    const out = await Promise.all(list.map((item) => parseArticle(item)));
 
     return {
         title: '3DM - ' + $('title').text().split('_', 1)[0],

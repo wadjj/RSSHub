@@ -31,7 +31,7 @@ const customPreset: PresetFactory = presetHTML5.extend((tags) => ({
     uid: (node) => ({ tag: 'a', attrs: { href: `https://nga.178.com/nuke.php?func=ucp&uid=${attrValue(node)}` }, content: ['@', ...childrenOf(node)] }),
     tid: (node) => ({ tag: 'a', attrs: { href: `https://nga.178.com/read.php?tid=${attrValue(node)}` }, content: node.content }),
     pid: (node) => {
-        const [pid, tid, page] = attrValue(node).split(',');
+        const [pid, tid, page] = attrValue(node).split(',', 3);
         return { tag: 'a', attrs: { href: `https://nga.178.com/read.php?tid=${tid}&page=${page}#pid${pid}Anchor` }, content: node.content };
     },
     // 分割线
@@ -99,7 +99,7 @@ async function handler(ctx) {
     const pageId = await getLastPageId(tid, authorId);
 
     const $ = await getPage(tid, authorId, pageId);
-    const title = $('title').text() || '';
+    const title = $('title').text();
     const posterMap = JSON.parse(
         $('script')
             .text()
@@ -123,7 +123,7 @@ async function handler(ctx) {
             const description = formatContent(content.html());
             const postId = content.attr('id');
             const link = getPageUrl(tid, authorId, pageId, postId);
-            const pubDate = timezone(parseDate(post.find('.postInfo > span').first().text(), 'YYYY-MM-DD HH:mm'), +8);
+            const pubDate = timezone(parseDate(post.find('.postInfo > span').first().text(), 'YYYY-MM-DD HH:mm'), 8);
 
             return {
                 title: load(description).text(),

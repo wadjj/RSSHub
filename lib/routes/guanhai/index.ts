@@ -8,13 +8,15 @@ import timezone from '@/utils/timezone';
 
 export const route: Route = {
     path: '/',
+    categories: ['new-media'],
+    example: '/guanhai',
     radar: [
         {
             source: ['guanhai.com.cn/'],
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: '首页',
     maintainers: ['TonyRL'],
     handler,
     url: 'guanhai.com.cn/',
@@ -55,7 +57,7 @@ async function handler() {
                 const $ = load(response);
                 item.author = $('.source').text();
                 item.description = $('.article-content').html() ?? $('.video-content').html();
-                item.pubDate = item.pubDate ?? timezone(parseDate($('.date').text(), 'YYYY-MM-DD HH:mm'), 8);
+                item.pubDate ??= timezone(parseDate($('.date').text(), 'YYYY-MM-DD HH:mm'), 8);
                 return item;
             })
         )

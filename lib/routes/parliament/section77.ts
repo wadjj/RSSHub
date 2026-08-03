@@ -41,7 +41,7 @@ async function handler(ctx) {
     let title = 'ร่างพระราชบัญญัติที่เปิดรับฟังความคิดเห็นตามมาตรา 77 ของรัฐธรรมนูญ';
 
     if (type) {
-        const [presenter, isMonetaryAct = ''] = type.split('-');
+        const [presenter, isMonetaryAct = ''] = type.split('-', 2);
 
         title +=
             {
@@ -125,7 +125,7 @@ async function handler(ctx) {
                 item.description = $('.des').first().html();
 
                 // Act draft status
-                const [, presenter, monetaryType] = $('.type77 h5').text().split(' ');
+                const [, presenter, monetaryType] = $('.type77 h5').text().split(' ', 3);
                 item.category = [
                     ...item.category,
                     $('.container-fluid .bg-status .col-md-8.p-0 h5 span,a')
@@ -148,7 +148,7 @@ async function handler(ctx) {
                 }
 
                 const dateText = $('.banner-detail .banner-detail-caption .blockquote p:last-child').text();
-                const dateRegex = /^รับฟังตั้งแต่วันที่\s(\d{1,2})\s*([\u0E00-\u0E7F]+)\s*(\d{4})/.exec(dateText);
+                const dateRegex = /^รับฟังตั้งแต่วันที่\s(\d{1,2})\s*([\u{0E00}-\u{0E7F}]+)\s*(\d{4})/u.exec(dateText);
 
                 if (dateRegex) {
                     item.pubDate = timezone(
@@ -170,7 +170,7 @@ async function handler(ctx) {
                             }[dateRegex[2].trim()],
                             Number.parseInt(dateRegex[1])
                         ),
-                        +7
+                        7
                     );
                 }
 

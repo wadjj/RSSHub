@@ -55,7 +55,7 @@ async function handler(ctx) {
         .find('.mobile_none li , .mobile_clear li')
         .toArray()
         .map((item) => {
-            const title = $(item).find('a.cjcx_biaob').text().trim();
+            const title = $(item).find('a.cjcx_biaob').text();
             const href = $(item).find('a').attr('href');
 
             let absolute_path;
@@ -79,7 +79,7 @@ async function handler(ctx) {
                 const detailResponse = await got(item.link);
                 const content = load(detailResponse.data);
                 try {
-                    item.pubDate = timezone(parseDate(content('meta[name=PubDate]').attr('content')), +8);
+                    item.pubDate = timezone(parseDate(content('meta[name=PubDate]').attr('content')), 8);
                     // 视频新闻规则不一样
                     if (cate === 'spxw') {
                         item.title = content('meta[name=ArticleTitle]').attr('content');

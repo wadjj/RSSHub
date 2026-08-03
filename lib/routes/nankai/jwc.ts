@@ -44,8 +44,8 @@ export const route: Route = {
                 const $dateMonth = $item.find('.d .d-m');
 
                 // 构建完整的日期
-                const day = $dateDay.text().trim(); // 格式：04
-                const monthYear = $dateMonth.text().trim(); // 格式：2025/06
+                const day = $dateDay.text(); // 格式：04
+                const monthYear = $dateMonth.text(); // 格式：2025/06
                 const fullDate = `${monthYear}/${day}`; // 2025/06/04
 
                 let linkStr = $link.attr('href');
@@ -55,9 +55,9 @@ export const route: Route = {
                 }
 
                 return {
-                    title: $link.text().trim(),
+                    title: $link.text(),
                     link: linkStr,
-                    pubDate: timezone(parseDate(fullDate, 'YYYY/MM/DD'), +8),
+                    pubDate: timezone(parseDate(fullDate, 'YYYY/MM/DD'), 8),
                 };
             })
             .filter((item) => item.link); // 过滤掉没有链接的项目
@@ -74,25 +74,12 @@ export const route: Route = {
                         const publishTimeText = $('.page-news-souse').text();
                         const timeMatch = publishTimeText.match(/发布时间：(\d{4}-\d{2}-\d{2})/);
                         if (timeMatch) {
-                            item.pubDate = timezone(parseDate(timeMatch[1]), +8);
+                            item.pubDate = timezone(parseDate(timeMatch[1]), 8);
                         }
 
                         // 获取文章内容
                         const content = $('.page-news-con .wp_articlecontent');
                         if (content.length > 0) {
-                            // 处理PDF链接，转换为绝对链接
-                            content.find('a').each((i, el) => {
-                                const $el = $(el);
-                                const href = $el.attr('href');
-                                if (href && !href.startsWith('http')) {
-                                    if (href.startsWith('/')) {
-                                        $el.attr('href', `${baseUrl}${href}`);
-                                    } else {
-                                        $el.attr('href', `${baseUrl}/${href}`);
-                                    }
-                                }
-                            });
-
                             // 处理PDF播放器div，提取PDF链接
                             content.find('.wp_pdf_player').each((i, el) => {
                                 const $el = $(el);

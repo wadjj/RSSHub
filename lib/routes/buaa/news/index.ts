@@ -44,7 +44,7 @@ async function handler(ctx: Context): Promise<Data> {
             return {
                 title: title.text(),
                 link: new URL(title.attr('href')!, baseUrl).href,
-                pubDate: timezone(parseDate(item.find('h2 em').text(), '[YYYY-MM-DD]'), +8),
+                pubDate: timezone(parseDate(item.find('h2 em').text(), '[YYYY-MM-DD]'), 8),
             };
         });
 
@@ -54,7 +54,7 @@ async function handler(ctx: Context): Promise<Data> {
                 const response = await got(item.link);
                 const $ = load(response.data);
 
-                item.description = $('.v_news_content').html() || '';
+                item.description = $('.v_news_content').html();
                 item.author = $('.vsbcontent_end').text().trim();
 
                 return item;

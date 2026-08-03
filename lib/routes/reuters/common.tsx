@@ -197,7 +197,6 @@ async function handler(ctx) {
     const browserHeaders = {
         Accept: 'application/json, text/plain, */*',
         'Accept-Language': 'en-US,en;q=0.9',
-        Referer: 'https://www.reuters.com/',
     };
 
     try {
@@ -231,13 +230,11 @@ async function handler(ctx) {
                         size: limit,
                         section_id,
                         website: 'reuters',
-                        ...(useSophi
-                            ? {
-                                  fetch_type: 'sophi',
-                                  sophi_page: '*',
-                                  sophi_widget: 'topic',
-                              }
-                            : {}),
+                        ...(useSophi && {
+                            fetch_type: 'sophi',
+                            sophi_page: '*',
+                            sophi_widget: 'topic',
+                        }),
                     }),
                 },
                 headers: browserHeaders,

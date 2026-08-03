@@ -102,7 +102,7 @@ async function handler(ctx) {
                 });
 
                 item.description = content.html();
-                item.pubDate = $('meta[name="PubDate"]').length ? timezone(parseDate($('meta[name="PubDate"]').attr('content')), +8) : item.pubDate;
+                item.pubDate = $('meta[name="PubDate"]').length ? timezone(parseDate($('meta[name="PubDate"]').attr('content')), 8) : item.pubDate;
 
                 return item;
             })
@@ -111,7 +111,7 @@ async function handler(ctx) {
     items = items.filter((item) => item !== null);
 
     return {
-        title: $('title').first().text(),
+        title: $('title').text(),
         link,
         item: items,
     };

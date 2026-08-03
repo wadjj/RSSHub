@@ -70,9 +70,6 @@ async function handler(ctx) {
     let response = null;
     try {
         response = await got(yzb_base_url + path, {
-            headers: {
-                Referer: yzb_base_url,
-            },
             responseType: 'buffer',
         });
     } catch {
@@ -104,7 +101,7 @@ async function handler(ctx) {
             return {
                 title: $('td > a', item).text(),
                 link: type === 'in-site' ? yzb_base_url + path + href : href,
-                pubDate: timezone(parseDate($('.font_10_time', item).text().slice(2, -2), 'YYYY-MM-DD'), +8),
+                pubDate: timezone(parseDate($('.font_10_time', item).text().slice(2, -2), 'YYYY-MM-DD'), 8),
                 type,
             };
         });

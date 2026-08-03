@@ -2,25 +2,34 @@ import { load } from 'cheerio';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
+import { getSubPath } from '@/utils/common-utils';
 import got from '@/utils/got';
 import { parseDate, parseRelativeDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
 
 export const route: Route = {
-    path: '/:params{.+}?',
-    name: 'Unknown',
-    maintainers: [],
+    path: '/posts',
+    categories: ['new-media'],
+    example: '/toodaylab/posts',
+    radar: [
+        {
+            source: ['toodaylab.com/posts'],
+            target: '/posts',
+        },
+    ],
+    name: '滚动',
+    maintainers: ['nczitzk'],
     handler,
 };
 
-async function handler(ctx) {
-    const { params = 'posts' } = ctx.req.param();
+export async function handler(ctx) {
+    const path = getSubPath(ctx);
     const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 30;
 
-    const isHot = params === 'hot';
+    const isHot = path === '/hot';
 
     const rootUrl = 'https://www.toodaylab.com';
-    const currentUrl = new URL(isHot ? 'posts' : params, rootUrl).href;
+    const currentUrl = new URL(isHot ? '/posts' : path, rootUrl).href;
 
     const { data: response } = await got(currentUrl);
 
@@ -58,7 +67,7 @@ async function handler(ctx) {
                       link: new URL(a.prop('href'), rootUrl).href,
                       description: item.find('p.excerpt').html(),
                       author: item.find('div.left-infos p a').text().trim(),
-                      pubDate: timezone(/[年日月]/.test(pubDate) ? parseDate(pubDate, ['YYYY年M月D日 HH:mm', 'M月D日 HH:mm']) : parseRelativeDate(pubDate), +8),
+                      pubDate: timezone(/[年日月]/.test(pubDate) ? parseDate(pubDate, ['YYYY年M月D日 HH:mm', 'M月D日 HH:mm']) : parseRelativeDate(pubDate), 8),
                   };
               });
 
@@ -82,7 +91,7 @@ async function handler(ctx) {
                     .slice(1)
                     .toArray()
                     .map((c) => content(c).text().replace(/#/, ''));
-                item.pubDate = item.pubDate ?? timezone(/[年日月]/.test(pubDate) ? parseDate(pubDate, ['YYYY年M月D日 HH:mm', 'M月D日 HH:mm']) : parseRelativeDate(pubDate), +8);
+                item.pubDate ??= timezone(/[年日月]/.test(pubDate) ? parseDate(pubDate, ['YYYY年M月D日 HH:mm', 'M月D日 HH:mm']) : parseRelativeDate(pubDate), 8);
                 item.upvotes = content('#like_count').text() ? Number(content('#like_count').text()) : 0;
                 item.comments = Number(content('div.right-infos a').first().text()) || 0;
 

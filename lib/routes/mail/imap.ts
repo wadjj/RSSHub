@@ -10,8 +10,15 @@ import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/imap/:email/:folder{.+}?',
-    name: 'Unknown',
-    maintainers: [],
+    categories: ['other'],
+    example: '/mail/imap/rss@rsshub.app',
+    parameters: {
+        email: 'Email account',
+        folder: 'Inbox name, `INBOX` by default',
+    },
+    description: 'Only support IMAP protocol, email password and other settings refer to [Route-specific Configurations](https://docs.rsshub.app/deploy/config#route-specific-configurations)',
+    name: 'Inbox',
+    maintainers: ['kt286'],
     handler,
 };
 
@@ -68,7 +75,8 @@ async function handler(ctx) {
     const mails = [];
     const lock = await client.getMailboxLock(folder);
     try {
-        for await (const message of client.fetch(`${Math.max(client.mailbox.exists - limit + 1, 1)}:*`, { envelope: true, source: true, uid: true })) {
+        const messages = client.fetch(`${Math.max(client.mailbox.exists - limit + 1, 1)}:*`, { envelope: true, source: true, uid: true });
+        for await (const message of messages) {
             mails.push(message);
         }
     } finally {

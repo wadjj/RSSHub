@@ -1,7 +1,6 @@
 import { load } from 'cheerio';
 
 import type { Route } from '@/types';
-import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
@@ -39,7 +38,7 @@ async function handler(ctx) {
 
     const $ = load(response);
 
-    const title = $('div.tips h2').first().text();
+    const title = $('div.tips h2').text();
 
     const items = $('div.article-title')
         .slice(0, limit)
@@ -53,12 +52,12 @@ async function handler(ctx) {
                 title: a.text(),
                 link: new URL(a.prop('href'), rootUrl).href,
                 author: a.text().split('：', 1)[0],
-                pubDate: timezone(parseDate(item.find('span').text()), +8),
+                pubDate: timezone(parseDate(item.find('span').text()), 8),
             };
         });
 
     return {
-        item: await ProcessFeed(limit, cache.tryGet, items),
+        item: await ProcessFeed(limit, items),
         title: `爱思想 - ${title}`,
         link: currentUrl,
         description: $('div.tips p').text(),

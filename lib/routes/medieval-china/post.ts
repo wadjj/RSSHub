@@ -8,13 +8,15 @@ import timezone from '@/utils/timezone';
 
 export const route: Route = {
     path: '/',
+    categories: ['reading'],
+    example: '/medieval-china',
     radar: [
         {
             source: ['medieval-china.club/'],
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: '首页',
     maintainers: ['artefaritaKuniklo'],
     handler,
     url: 'medieval-china.club/',
@@ -33,7 +35,7 @@ async function handler(ctx) {
         .map((item) => ({
             title: item.title,
             link: `${baseUrl}${item.path}`,
-            pubDate: timezone(parseDate(item.date), +8),
+            pubDate: timezone(parseDate(item.date), 8),
         }));
     const items = await Promise.all(
         posts.map((item) =>

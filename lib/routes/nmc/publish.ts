@@ -34,7 +34,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                       const timeStrArray = $el
                           .find('div.author b')
                           .toArray()
-                          .map((el) => $(el).text().trim());
+                          .map((el) => $(el).text());
                       const pubDateStr: string | undefined = `${timeStrArray.pop()}:00 ${timeStrArray.join('/')}`;
 
                       const title = `${pubDateStr} - ${$el.find('div.title').text().replaceAll(/\s/g, '')}`;
@@ -61,7 +61,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                       const processedItem: DataItem = {
                           title,
                           description,
-                          pubDate: timezone(parseDate(pubDateStr, 'HH:mm YYYY/MM/DD'), +8),
+                          pubDate: timezone(parseDate(pubDateStr, 'HH:mm YYYY/MM/DD'), 8),
                           link: linkUrl ? new URL(linkUrl, baseUrl).href : undefined,
                           author: authors,
                           guid,
@@ -70,7 +70,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                               html: description,
                               text: description,
                           },
-                          updated: timezone(parseDate(upDatedStr, 'HH:mm YYYY/MM/DD'), +8),
+                          updated: timezone(parseDate(upDatedStr, 'HH:mm YYYY/MM/DD'), 8),
                           language,
                       };
 
@@ -86,7 +86,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
 
                       const title = `${$el.find('div').text().trim()} - ${$('div.nav1 a.actived, div#menuNavBar button.dropdown-toggle')
                           .toArray()
-                          .map((el) => $(el).text().trim())
+                          .map((el) => $(el).text())
                           .join(' - ')}`;
                       const description: string | undefined = renderDescription({
                           images: image
@@ -107,7 +107,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                       const processedItem: DataItem = {
                           title,
                           description,
-                          pubDate: timezone(parseDate(pubDateStr), +8),
+                          pubDate: timezone(parseDate(pubDateStr), 8),
                           link: linkUrl ? new URL(linkUrl, baseUrl).href : undefined,
                           guid,
                           id: guid,
@@ -117,7 +117,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                           },
                           image,
                           banner: image,
-                          updated: timezone(parseDate(upDatedStr), +8),
+                          updated: timezone(parseDate(upDatedStr), 8),
                           language,
                       };
 

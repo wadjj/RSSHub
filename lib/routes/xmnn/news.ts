@@ -8,9 +8,37 @@ import timezone from '@/utils/timezone';
 
 export const route: Route = {
     path: '/news/:category{.+}?',
-    name: 'Unknown',
-    maintainers: [],
+    categories: ['traditional-media'],
+    example: '/xmnn/news/xmxw',
+    parameters: { category: '分类 id，见下表，默认为厦门新闻' },
+    features: {
+        requireConfig: false,
+        requirePuppeteer: false,
+        antiCrawler: false,
+        supportBT: false,
+        supportPodcast: false,
+        supportScihub: false,
+    },
+    radar: [
+        {
+            source: ['news.xmnn.cn/:category'],
+            target: '/news/:category',
+        },
+    ],
+    name: '新闻',
+    maintainers: ['nczitzk'],
     handler,
+    description: `| 分类名       | 分类 id |
+| ------------ | ------- |
+| 厦门新闻发布 | xmxwfb  |
+| 厦门新闻     | xmxw    |
+| 本网快报     | bwkb    |
+| 厦门网眼     | xmwy    |
+| 福建新闻     | fjxw    |
+| 国内新闻     | gnxw    |
+| 国际新闻     | gjxw    |
+| 台海新闻     | thxw    |
+| 社会新闻     | shxw    |`,
 };
 
 async function handler(ctx) {
@@ -35,7 +63,7 @@ async function handler(ctx) {
                 link: item.prop('href'),
                 description: item.find('div.abstract').html(),
                 author: item.find('div.source').text(),
-                pubDate: timezone(parseDate(item.find('div.time').text()), +8),
+                pubDate: timezone(parseDate(item.find('div.time').text()), 8),
             };
         });
 
@@ -51,7 +79,7 @@ async function handler(ctx) {
                 item.author = content('span.cont-a-src a')
                     .toArray()
                     .map((a) => content(a).text());
-                item.pubDate = timezone(parseDate(content('span.time, div.pubtime div.w').contents().first().text().trim()), +8);
+                item.pubDate = timezone(parseDate(content('span.time, div.pubtime div.w').contents().first().text().trim()), 8);
 
                 return item;
             })

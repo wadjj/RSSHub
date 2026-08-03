@@ -44,7 +44,7 @@ async function handler(ctx) {
                 link: item.attr('href').startsWith('http') ? item.attr('href') : `${baseUrl}${item.attr('href')}`,
             };
         })
-        .filter((i) => !i.link.includes('m.0818tuan.com/tb1111.php'));
+        .filter((i) => !i.link.includes('m.0818tuan.com/tb1111.php') && !i.link.includes('www.0818tuan.com/pdd/zudui.php'));
 
     const items = await Promise.all(
         list.map((item) =>
@@ -55,7 +55,7 @@ async function handler(ctx) {
                 $('.pageLink, .alert, p[style="margin:15px;"]').remove();
 
                 item.description = $('.post-content').html();
-                item.pubDate = timezone(parseDate($('.panel-body > .text-center').text().replace('时间:', ''), 'YYYY-MM-DD HH:mm:ss'), +8);
+                item.pubDate = timezone(parseDate($('.panel-body > .text-center').text().replace('时间:', ''), 'YYYY-MM-DD HH:mm:ss'), 8);
 
                 return item;
             })

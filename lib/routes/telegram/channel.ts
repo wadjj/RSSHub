@@ -1,6 +1,7 @@
 import querystring from 'node:querystring';
 
 import { load } from 'cheerio';
+import { FetchError } from 'ofetch';
 
 import { config } from '@/config';
 import type { Route } from '@/types';
@@ -195,8 +196,14 @@ async function handler(ctx) {
     const data = await cache.tryGet(
         resourceUrl,
         async () => {
-            const _r = await ofetch(resourceUrl);
-            return _r;
+            try {
+                return await ofetch(resourceUrl);
+            } catch (error) {
+                if (error instanceof FetchError && error.statusCode) {
+                    throw error;
+                }
+                return await ofetch(resourceUrl.replace('https://t.me/', 'https://telegram.me/'));
+            }
         },
         config.cache.routeExpire,
         false
@@ -492,8 +499,12 @@ async function handler(ctx) {
                                 height = (Number(aspectRatioStr) / 100) * width;
                             }
                             // Only set width/height when >32 to avoid invisible images.
-                            width > 32 && attrs.push(`width="${width}"`);
-                            height > 32 && attrs.push(`height="${height.toFixed(2).replace('.00', '')}"`);
+                            if (width > 32) {
+                                attrs.push(`width="${width}"`);
+                            }
+                            if (height > 32) {
+                                attrs.push(`height="${height.toFixed(2).replace('.00', '')}"`);
+                            }
                             tag_media += backgroundUrlSrc ? `<img ${attrs.join(' ')}>` : '';
                         }
                         if (tag_media) {

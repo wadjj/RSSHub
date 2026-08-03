@@ -55,8 +55,8 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     const $$: CheerioAPI = load(detailResponse);
 
                     const title: string = $$('div.detail-title').text();
-                    const description: string = $$('div.detail-content').html() ?? '';
-                    const pubDateStr: string | undefined = $$('div.detail-info span').last().text().trim();
+                    const description = $$('div.detail-content').html();
+                    const pubDateStr: string | undefined = $$('div.detail-info span').last().text();
                     const categories: string[] = $$('meta[name="keywords"]').attr('content')?.split(/,/) ?? [];
                     const authors: DataItem['author'] = $$('div.detail-info span').first().text().split(/：/).pop();
                     const upDatedStr: string | undefined = pubDateStr;
@@ -64,14 +64,14 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     const processedItem: DataItem = {
                         title,
                         description,
-                        pubDate: pubDateStr ? timezone(parseDate(pubDateStr), +8) : item.pubDate,
+                        pubDate: pubDateStr ? timezone(parseDate(pubDateStr), 8) : item.pubDate,
                         category: categories,
                         author: authors,
                         content: {
                             html: description,
                             text: description,
                         },
-                        updated: upDatedStr ? timezone(parseDate(upDatedStr), +8) : item.updated,
+                        updated: upDatedStr ? timezone(parseDate(upDatedStr), 8) : item.updated,
                         language,
                     };
 

@@ -12,13 +12,15 @@ const targetUrl = 'https://ielts.neea.cn/allnews?locale=zh_CN';
 
 export const route: Route = {
     path: '/',
+    categories: ['study'],
+    example: '/ielts',
     radar: [
         {
             source: ['ielts.neea.cn/allnews'],
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: '最新消息',
     maintainers: ['zenxds'],
     handler,
     url: 'ielts.neea.cn/allnews',
@@ -39,7 +41,7 @@ async function handler() {
             });
             await page.waitForSelector('div.container');
 
-            const html = await page.evaluate(() => document.documentElement.innerHTML);
+            const html = await page.evaluate(() => document.documentElement.getHTML());
             await context.close();
             return html;
         },
@@ -56,7 +58,7 @@ async function handler() {
             return {
                 title: $elem.find('a').text(),
                 link: $elem.find('a').attr('href'),
-                pubDate: timezone(parseDate($elem.find('span').eq(-1).text().replaceAll(/[[\]]/g, '').trim(), +8)),
+                pubDate: timezone(parseDate($elem.find('span').eq(-1).text().replaceAll(/[[\]]/g, '').trim(), 8)),
             };
         });
 

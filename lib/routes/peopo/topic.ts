@@ -28,7 +28,7 @@ export const route: Route = {
         },
     ],
     name: '新聞分類',
-    maintainers: [],
+    maintainers: ['TonyRL'],
     handler,
     description: `| 分類     | ID  |
 | -------- | --- |
@@ -76,7 +76,7 @@ async function handler(ctx) {
                 item.category = $('#node-terms .inline li')
                     .toArray()
                     .map((item) => $(item).find('a').text());
-                item.pubDate = timezone(parseDate($('.submitted span').text()), +8);
+                item.pubDate = timezone(parseDate($('.submitted span').text()), 8);
                 item.description = ($('.field-name-field-video-id .field-items').text() ? $('.field-name-field-video-id input').attr('value') : '') + $('.post_text_s .field-items').html();
 
                 return item;

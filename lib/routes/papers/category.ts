@@ -34,7 +34,6 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 .contents()
                 .last()
                 .text()
-                ?.trim()
                 ?.match(/(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/)?.[1];
             const linkUrl: string | undefined = $el.find('a.title-link').attr('href');
             const categoryEls: Element[] = $el.find('p.subjects a').toArray();
@@ -55,18 +54,18 @@ export const handler = async (ctx: Context): Promise<Data> => {
 
             let processedItem: DataItem = {
                 title,
-                pubDate: pubDateStr ? timezone(parseDate(pubDateStr), +0) : undefined,
+                pubDate: pubDateStr ? timezone(parseDate(pubDateStr), 0) : undefined,
                 link: linkUrl ? new URL(linkUrl, baseUrl).href : undefined,
                 category: categories,
                 author: authors,
                 doi,
                 guid,
                 id: guid,
-                updated: upDatedStr ? timezone(parseDate(upDatedStr), +0) : undefined,
+                updated: upDatedStr ? timezone(parseDate(upDatedStr), 0) : undefined,
                 language,
             };
 
-            const $enclosureEl: Cheerio<Element> = $el.find('a.title-pdf').first();
+            const $enclosureEl: Cheerio<Element> = $el.find('a.title-pdf');
             const enclosureUrl: string | undefined = $enclosureEl.attr('onclick')?.match(/togglePdf\('.*?',\s'(.*?)',\sthis\)/)?.[1];
 
             if (enclosureUrl) {

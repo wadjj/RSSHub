@@ -23,15 +23,21 @@ const map = new Map([
 
 export const route: Route = {
     path: '/cae/:type/:getDescription?',
-    name: 'Unknown',
+    categories: ['university'],
+    example: '/nuaa/cae/zhxw',
+    parameters: { type: '分类名，见下表', getDescription: '是否获取全文' },
+    name: '自动化学院',
     maintainers: ['Xm798'],
     handler,
+    description: `| 综合新闻 | 党委行政 | 人事 / 合作 | 研究生培养 | 本科生培养 | 学生工作 | 通知公告 | 学术信息 | 答辩公告 |
+| -------- | -------- | ----------- | ---------- | ---------- | -------- | -------- | -------- | -------- |
+| zhxw     | dwxz     | rshz        | yjs        | bks        | xsgz     | tzgg     | xsxx     | dbgg     |`,
 };
 
 async function handler(ctx) {
     const type = ctx.req.param('type');
     const suffix = map.get(type).suffix;
-    const getDescription = Boolean(ctx.req.param('getDescription')) || false;
+    const getDescription = Boolean(ctx.req.param('getDescription'));
     const link = new URL(suffix, host).href;
     const cookie = await getCookie(host);
     const gotConfig = {

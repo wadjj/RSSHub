@@ -42,7 +42,7 @@ async function handler(ctx) {
         .toArray()
         .map((item) => ({
             url: `${rootUrl}${indexContent(item).attr('url')}`,
-            queryData: JSON.parse(indexContent(item).attr('querydata').replaceAll('"', '|').replaceAll("'", '"').replaceAll('|', '"')),
+            queryData: JSON.parse(indexContent(item).attr('querydata').replaceAll('"', '|').replaceAll(/['|]/g, '"')),
         }))[0];
 
     const dataUrl = `${dataRequestUrl.url}?${Object.entries(dataRequestUrl.queryData)
@@ -70,9 +70,7 @@ async function handler(ctx) {
                 const detailResponse = await got(item.link);
                 const content = load(detailResponse.data);
 
-                item.description = content('#con_con')
-                    .html()
-                    ?.replaceAll(/(<iframe.*?src=")([^"]*)(".*?>)/g, (_match, p1, p2, p3) => p1 + rootUrl + p2 + p3);
+                item.description = content('#con_con').html();
 
                 return item;
             })

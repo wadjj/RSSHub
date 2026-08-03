@@ -8,6 +8,8 @@ import timezone from '@/utils/timezone';
 
 export const route: Route = {
     path: '/',
+    categories: ['study'],
+    example: '/50forum',
     radar: [
         {
             source: ['www.50forum.org.cn/portal/list/index.html?id=6'],
@@ -18,7 +20,7 @@ export const route: Route = {
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: '专家文章',
     maintainers: ['sddiky'],
     handler,
     url: 'https://www.50forum.org.cn/portal/list/index.html?id=6',
@@ -46,7 +48,7 @@ async function handler() {
             return {
                 title: keyword[1],
                 author: keyword[2],
-                pubDate: timezone(parseDate(keyword[3], 'YYYY-MM-DD'), +8),
+                pubDate: timezone(parseDate(keyword[3], 'YYYY-MM-DD'), 8),
                 link,
             };
         });

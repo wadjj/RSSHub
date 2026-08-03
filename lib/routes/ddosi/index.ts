@@ -24,10 +24,7 @@ async function handler() {
     const url = 'https://www.ddosi.org/';
     const response = await got({
         method: 'get',
-        url: String(url),
-        headers: {
-            Referer: url,
-        },
+        url,
         headerGeneratorOptions: PRESETS.MODERN_IOS,
     });
     const $ = load(response.data);
@@ -51,7 +48,7 @@ async function handler() {
 
     return {
         title: '雨苁',
-        link: String(url),
+        link: url,
         item: items,
     };
 }

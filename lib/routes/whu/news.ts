@@ -1,7 +1,6 @@
 import { load } from 'cheerio';
 
 import type { Route } from '@/types';
-import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 
@@ -12,9 +11,9 @@ export const route: Route = {
     path: '/news/:category{.+}?',
     categories: ['university'],
     example: '/whu/news',
-    parameters: { category: '新闻栏目，可选' },
+    parameters: { category: '分类，见下表，默认为 `wdzx/wdyw`， 即 **武大要闻**' },
     name: '新闻网',
-    maintainers: [],
+    maintainers: ['SChen1024', 'nczitzk'],
     handler,
     description: `category 参数可选，范围如下:
 
@@ -78,7 +77,7 @@ async function handler(ctx) {
             };
         });
 
-    items = await processItems(items, cache.tryGet, rootUrl);
+    items = await processItems(items, rootUrl);
 
     const meta = processMeta(response);
     const siteName = getMeta(meta, 'SiteName');

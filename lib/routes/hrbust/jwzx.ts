@@ -59,8 +59,8 @@ async function handler(ctx) {
             const element = $(item);
             const link = new URL(element.find('a').attr('href'), rootUrl).href;
             const title = element.find('a').text().trim();
-            const pubDateText = element.find('span').text().trim();
-            const pubDate = timezone(parseDate(pubDateText), +8);
+            const pubDateText = element.find('span').text();
+            const pubDate = timezone(parseDate(pubDateText), 8);
             return {
                 title,
                 link,

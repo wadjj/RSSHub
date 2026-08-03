@@ -41,7 +41,7 @@ const parseArticleList = ($: CheerioAPI, limit: number) =>
                 description,
                 pubDate: pubDate ? parseDate(pubDate) : undefined,
                 link,
-                author: item.find('div.subcat span.y a').first().text(),
+                author: item.find('div.subcat span.y a').text(),
                 content: {
                     html: description,
                     text: item.find('div.wznr').text(),
@@ -122,7 +122,7 @@ const parseArticle = ($$: CheerioAPI, item) => {
 
     item.title = title;
     item.description = description;
-    item.pubDate = pubDate ? timezone(parseDate(pubDate), +8) : item.pubDate;
+    item.pubDate = pubDate ? timezone(parseDate(pubDate), 8) : item.pubDate;
     item.author = $$('p.xg1 a').first().text();
     item.guid = guid;
     item.id = guid;
@@ -162,7 +162,7 @@ const parsePost = ($$: CheerioAPI, item) => {
     $$('i.pstatus').remove();
     $$('div.tip').remove();
 
-    const title = $$('span#thread_subject').text().trim();
+    const title = $$('span#thread_subject').text();
     const description = $$('div.post_message').first().html();
     const pubDate = $$('span[title]').first().prop('title');
 
@@ -171,8 +171,8 @@ const parsePost = ($$: CheerioAPI, item) => {
 
     item.title = title;
     item.description = description;
-    item.pubDate = pubDate ? timezone(parseDate(pubDate), +8) : item.pubDate;
-    item.author = $$('a.kmxi2').first().text();
+    item.pubDate = pubDate ? timezone(parseDate(pubDate), 8) : item.pubDate;
+    item.author = $$('a.kmxi2').text();
     item.guid = guid;
     item.id = guid;
     item.content = {

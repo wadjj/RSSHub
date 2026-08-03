@@ -87,17 +87,18 @@ async function handler() {
                 .find('a[href]')
                 .contents()
                 .filter((index, element) => element.nodeType === 3)
-                .text()
-                .trim();
+                .text();
             const newsLink = host + item.find('a[href]').attr('href');
             const newsPubDate = parseDate(date);
 
             let prefix = '【其他】';
             for (const code in prefixes) {
-                if (newsLink.search('info/' + code) !== -1) {
-                    prefix = prefixes[code];
-                    break;
+                if (newsLink.search('info/' + code) === -1) {
+                    continue;
                 }
+
+                prefix = prefixes[code];
+                break;
             }
             newsTitle = prefix + newsTitle;
 

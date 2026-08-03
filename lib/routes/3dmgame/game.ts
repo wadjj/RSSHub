@@ -1,7 +1,6 @@
 import { load } from 'cheerio';
 
 import type { Route } from '@/types';
-import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 
@@ -9,6 +8,8 @@ import { parseArticle } from './utils';
 
 export const route: Route = {
     path: '/games/:name/:type?',
+    example: '/3dmgame/games/detroitbecomehuman/news',
+    parameters: { name: '游戏名字，可以在专题页的 url 中找到', type: '资讯类型，见下表，默认为 `news`' },
     radar: [
         {
             source: ['3dmgame.com/games/:name/:type'],
@@ -18,6 +19,9 @@ export const route: Route = {
     categories: ['game'],
     maintainers: ['sinchang', 'jacky2001114', 'HenryQW', 'lyqluis'],
     handler,
+    description: `| 新闻 | 攻略 | 资源     |
+| ---- | ---- | -------- |
+| news | gl   | resource |`,
 };
 
 async function handler(ctx) {
@@ -40,7 +44,7 @@ async function handler(ctx) {
         };
     });
 
-    const items = await Promise.all(list.map((item) => parseArticle(item, cache.tryGet)));
+    const items = await Promise.all(list.map((item) => parseArticle(item)));
 
     return {
         title: $('head title').text().split('_', 1)[0],

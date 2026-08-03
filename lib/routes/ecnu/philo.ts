@@ -26,7 +26,7 @@ export const route: Route = {
         const links = $('ul.data-list2 > li')
             .toArray()
             .map((el) => ({
-                pubDate: timezone(parseDate($(el).find('span').text()), +8),
+                pubDate: timezone(parseDate($(el).find('span').text()), 8),
                 link: new URL($(el).find('a').attr('href'), baseUrl).href,
                 title: $(el).find('a').text(),
             }));
@@ -44,7 +44,7 @@ export const route: Route = {
                             $el.attr(attr, new URL(val, baseUrl).href);
                         }
                     });
-                    item.description = $read.html()?.trim();
+                    item.description = $read.html();
                     return item;
                 })
             )
