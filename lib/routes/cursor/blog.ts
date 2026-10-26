@@ -1,8 +1,10 @@
 import { load } from 'cheerio';
 import type { Context } from 'hono';
+import pMap from 'p-map';
 
 import type { Data, Route } from '@/types';
 import { ViewType } from '@/types';
+import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
@@ -20,17 +22,18 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $ = load(html);
 
     const main = $('#main').last(); // there are two main tags before hydration
-    const items = main
+    const seen = new Set<string>();
+    const cards = main
         .find('article')
-        .slice(0, limit)
         .toArray()
         .map((el) => {
             const $el = $(el);
-            const $link = $el.find('a').first();
+            const $link = $el.find('a').first().length ? $el.find('a').first() : $el.closest('a');
 
-            const title = $link.find('p').first().text().trim();
-            const description = $link.find('p').eq(1).text().trim();
-            const pubDate = parseDate($el.find('time').first().text().trim());
+            const title = $el.find('p').first().text().trim();
+            const description = $el.find('p').eq(1).text().trim();
+            const $time = $el.find('time').first();
+            const pubDate = parseDate($time.attr('datetime') || $time.text().trim());
 
             const href = $link.attr('href');
             const link = href ? new URL(href, baseUrl).href : undefined;
@@ -41,14 +44,40 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 pubDate,
                 link,
             };
-        });
+        })
+        .filter((item) => {
+            if (!item.title || !item.link || seen.has(item.link)) {
+                return false;
+            }
+            seen.add(item.link);
+            return true;
+        })
+        .slice(0, limit);
+
+    const items = await pMap(
+        cards,
+        async (item) => {
+            const hostname = new URL(item.link!).hostname;
+            if (!['cursor.com', 'x.ai'].includes(hostname)) {
+                return item;
+            }
+            const description = await cache.tryGet(`cursor:blog:body:v1:${item.link}`, async () => {
+                const articleHtml = await ofetch(item.link!);
+                const $article = load(articleHtml);
+                const body = $article(hostname === 'x.ai' ? '.prose' : '.prose--blog, main article .prose').first();
+                body.find('script, style').remove();
+                return body.html() || item.description;
+            });
+            return { ...item, description };
+        },
+        { concurrency: 4 }
+    );
 
     return {
         title: $('title').text() || 'Cursor Blog',
         description: $('meta[property="og:description"]').attr('content'),
         link: targetUrl,
         item: items,
-        allowEmpty: true,
         image: $('meta[property="og:image"]').attr('content'),
     };
 };
