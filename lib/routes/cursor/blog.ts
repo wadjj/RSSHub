@@ -11,7 +11,10 @@ import { parseDate } from '@/utils/parse-date';
 export const handler = async (ctx: Context): Promise<Data> => {
     const { topic, locale } = ctx.req.param();
     const limit = Number(ctx.req.query('limit') ?? '10');
+    return getBlog(topic, locale, limit);
+};
 
+export const getBlog = async (topic?: string, locale?: string, limit = 10): Promise<Data> => {
     const baseUrl = 'https://cursor.com';
     const normalizedTopic = topic === 'all' ? undefined : topic;
     const localeSegment = locale ? `/${locale}` : '';

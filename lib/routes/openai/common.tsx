@@ -45,8 +45,8 @@ export const fetchArticleDetails = async (url: string) => {
 };
 
 /** Fetch all articles from OpenAI's RSS feed. */
-export const fetchArticles = async (limit: number, category?: string): Promise<DataItem[]> => {
-    const page = await ofetch('https://openai.com/news/rss.xml', {
+export const fetchArticles = async (limit: number, category?: string, feedUrl = 'https://openai.com/news/rss.xml'): Promise<DataItem[]> => {
+    const page = await ofetch(feedUrl, {
         responseType: 'text',
         headers: { 'User-Agent': config.ua },
     });

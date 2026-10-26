@@ -2,7 +2,9 @@ import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 
 import { handler as cursor } from './routes/cursor/blog';
+import { route as cursorResearch } from './routes/cursor/research';
 import { handler as lovable } from './routes/lovable/inside';
+import { route as openaiEngineering } from './routes/openai/engineering';
 import server from './setup.test';
 
 function context(params: Record<string, string> = {}, limit = '10'): any {
@@ -10,6 +12,36 @@ function context(params: Record<string, string> = {}, limit = '10'): any {
 }
 
 describe('AI RnD publication feeds', () => {
+    it('expands linked x.ai articles in the dedicated Cursor research feed', async () => {
+        server.use(
+            http.get('https://cursor.com/cn/blog/topic/research', () =>
+                HttpResponse.html('<main id="main"><a href="https://x.ai/news/test-cursor-external"><article><p>External research</p><time datetime="2026-09-21T00:00:00Z"></time></article></a></main>')
+            ),
+            http.get('https://x.ai/news/test-cursor-external', () => HttpResponse.html('<div class="prose"><p>Complete external research.</p><style>.chart{color:red}</style></div>'))
+        );
+        const feed = await cursorResearch.handler(context({ locale: 'cn' }));
+        expect(feed.item[0].description).toBe('<p>Complete external research.</p>');
+    });
+
+    it('uses the native OpenAI engineering feed and expands its articles', async () => {
+        server.use(
+            http.get('https://openai.com/news/engineering/rss.xml', () =>
+                HttpResponse.xml(
+                    '<rss><channel><item><guid>test-engineering</guid><title>Engineering story</title><link>https://openai.com/index/test-engineering/</link><pubDate>Fri, 23 Oct 2026 17:00:00 GMT</pubDate></item></channel></rss>'
+                )
+            ),
+            http.get('https://openai.com/index/test-engineering/', () =>
+                HttpResponse.html(
+                    '<main id="main"><article><section><div><div><div><div><h1>Engineering story</h1></div></div></div></div></section><p>Complete engineering article.</p><footer>Related articles</footer></article></main>'
+                )
+            )
+        );
+        const feed = await openaiEngineering.handler(context());
+        expect(feed.item).toHaveLength(1);
+        expect(feed.item[0].description).toContain('Complete engineering article.');
+        expect(feed.item[0].description).not.toContain('Related articles');
+        expect(new Date(feed.item[0].pubDate!).toISOString()).toBe('2026-10-23T17:00:00.000Z');
+    });
     it('filters Lovable server-rendered categories before applying the item limit', async () => {
         server.use(
             http.get('https://lovable.dev/blog', () =>
