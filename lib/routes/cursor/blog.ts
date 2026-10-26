@@ -8,7 +8,7 @@ import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
-export const handler = async (ctx: Context): Promise<Data> => {
+export const handler = (ctx: Context): Promise<Data> => {
     const { topic, locale } = ctx.req.param();
     const limit = Number(ctx.req.query('limit') ?? '10');
     return getBlog(topic, locale, limit);
